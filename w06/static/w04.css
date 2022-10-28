@@ -1,0 +1,29 @@
+html,body{
+    margin:0px; /*確保填滿畫面邊框*/
+    width:100%;
+    height:100%;
+}
+.head{
+    font-size:3em;
+    font-weight: bold;
+    margin:0px;
+    background-color: rgb(3, 59, 122);
+    color:white;
+    height: 100px;
+    display:flex;           /*區塊內文完美置中*/
+    align-items: center;    /*操控區塊垂直對齊*/
+    justify-content: center; /*水平對齊-置中*/
+    /* display:flex;   以此為父層，開放子層區塊對齊 */
+}
+
+.mid{
+    font-size:2em;
+    font-weight: bold;
+    margin:20px;
+    color:black;
+    height: 8%;
+    display:flex;           /*區塊內文完美置中*/
+    align-items: center;    /*操控區塊垂直對齊*/
+    justify-content: center; /*水平對齊-置中*/
+    /* display:flex;   以此為父層，開放子層區塊對齊 */
+}

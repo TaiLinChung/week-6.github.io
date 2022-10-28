@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <title>Signin</title>
+        <meta name="viewport" content="width=device-width",initial-scale="1.0" />
+        <!-- 將static資料夾的CSS吃進來 -->
+        <link rel="stylesheet" href="{{ url_for('static',filename='w04.css') }}" />
+        
+    </head>
+    <body>
+        <div class="head">歡迎光臨，請註冊登入系統</div>
+        <div class="mid">註冊帳號</div>
+
+        <form action="/signup" method="POST"> <!-- POST連線方法-->
+            <div class="mid">姓名<input type="text" name="name"/></div>
+            <br/>
+            <div class="mid">帳號<input type="text" name="account"/></div>
+            <br/>
+            <div class="mid">密碼<input type="text" name="password"/></div>
+            <br/>
+            <div class="mid"><button>註冊</button></div>
+        </form>
+
+        <br/>
+        <hr/>
+
+
+        <div class="mid">登入系統</div>
+        <form action="/signin" method="POST">
+            <div class="mid">帳號<input type="text" name="account"/></div>
+            <br/>
+            <div class="mid">密碼<input type="text" name="password"/></div>
+            <br/>
+            <div class="mid"><button>登入</button></div>
+        </form>
+
+
+    </body>
+</html>

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <title>Signin</title>
+        <meta name="viewport" content="width=device-width",initial-scale="1.0" />
+<link rel="stylesheet" href="{{ url_for('static',filename='w04.css') }}" />
+        
+    </head>
+    <body>
+        <div class="head">歡迎光臨，這是會員頁</div>
+        <!-- 大改1-3 前端接收到字典形式的資料並放在標籤屬性中透過下方<scrip>串聯js -->
+        <div id="getName" d="{{record_name}} "></div>
+        <!-- 大改1-4_2 json處理完的資料回填到標籤中 -->
+        <a class="mid" href="http://127.0.0.1:3000/signout">登出系統</a>
+
+        
+        <br/>
+        <hr/>
+        <!-- 大改1-5 按下送出後挑轉至message也要保持資料一致性 -->
+        <div class="mid">留下訊息</div>
+        <form action="/message" method="POST"> 
+            <div class="mid">內容<input type="text/javascript" name="message"/></div>
+            <br/>
+
+            <div class="mid" id="more_message"><button>送出</button></div>
+            
+        </form>
+
+<!-- 大改1-4_3 json處理完的資料回填到標籤中 -->
+        <div id="getHistory" d="{{record_message}} "></div>
+        <!-- <div id="myList" ></div> -->
+        
+        <script src=".\week06.js" defer></script>
+
+        
+
+        <!-- week04作業抓來參考 -->
+        <!-- <div id="flagEnd"><div class="head">正整數平方計算結果</div></div>
+        <div id="try" d="{{content}}" style="display:none"></div>
+        <a class="mid" href="http://127.0.0.1:3000/signout">回上一頁</a>
+        
+        <script>
+            let num=document.getElementById("try").getAttribute("d");
+            let nameBlock = document.createElement("div");     //创建一个div元素
+            let result=document.createTextNode(num**2);
+            nameBlock.appendChild(result);
+            nameBlock.setAttribute("class","mid");
+            document.getElementById("flagEnd").appendChild(nameBlock);
+        </script> -->
+
+
+    </body>
+</html>
