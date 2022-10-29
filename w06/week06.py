@@ -113,7 +113,7 @@ def signin():
     ##搜尋資料表
     mycursor=mydb.cursor()
     #傳統搜尋法--------------------------------------------------------------------------------------------------------------
-    # sql="SELECT *FROM accounts WHERE account='"+account+"' and password='"+password+"' or 1=1"
+    # sql="SELECT *FROM accounts WHERE account='"+account+"' and password='"+password+"'"
     # mycursor.execute(sql)
     #佔位符號填入搜尋
     sql="SELECT *FROM accounts WHERE account=%s and password=%s"
