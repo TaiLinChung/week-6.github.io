@@ -15,8 +15,8 @@ app.secret_key="any string but secret"
 import mysql.connector
 mydb=mysql.connector.connect(
     host="localhost",
-    user="",
-    password=""
+    user="root",
+    password="Bb0970662139"
 )
 ##如果還沒創建DATABASE就立刻創建
 mycursor=mydb.cursor()
@@ -57,8 +57,13 @@ def signup():
     #3.連線資料庫判定是否註冊過
     mycursor=mydb.cursor()
     ##姓名重複或者帳號密碼同時重複都不要
-    sql="SELECT *FROM accounts WHERE (account='"+account+"' and password='"+password+"') or name='"+name+"'"
-    mycursor.execute(sql)
+    #傳統搜尋法--------------------------------------------------------------------------------------------------------------
+    # sql="SELECT *FROM accounts WHERE (account='"+account+"' and password='"+password+"') or name='"+name+"'"
+    # mycursor.execute(sql)
+    #佔位符號填入搜尋
+    sql="SELECT *FROM accounts WHERE (account=%s and password=%s) or name=%s"
+    adr=(account,password,name)
+    mycursor.execute(sql,adr)
     myresult=mycursor.fetchall()
     print("搜尋的結果",myresult)
 
@@ -107,8 +112,14 @@ def signin():
     #5.連線資料庫判定能否登入
     ##搜尋資料表
     mycursor=mydb.cursor()
-    sql="SELECT *FROM accounts WHERE account='"+account+"' and password='"+password+"'"
-    mycursor.execute(sql)
+    #傳統搜尋法--------------------------------------------------------------------------------------------------------------
+    # sql="SELECT *FROM accounts WHERE account='"+account+"' and password='"+password+"' or 1=1"
+    # mycursor.execute(sql)
+    #佔位符號填入搜尋
+    sql="SELECT *FROM accounts WHERE account=%s and password=%s"
+    adr=(account,password)
+    mycursor.execute(sql,adr)
+
     myresult=mycursor.fetchall()
     print("以帳號密碼搜尋的結果",myresult)
     #5.1帳號密碼在資料表中找不到，導向錯誤頁面
@@ -119,9 +130,14 @@ def signin():
     #5.2否則帳號密碼正確，導向登入頁面member
     else:
         print("帳號密碼正確")
-        ##5.3篩出姓名
-        sql="SELECT name FROM accounts WHERE account='"+account+"' and password='"+password+"'"
-        mycursor.execute(sql)
+        ##5.3篩出姓名--------------------------------------------------------------------------------------------------
+        # #一般搜尋
+        # sql="SELECT name FROM accounts WHERE account='"+account+"' and password='"+password+"'"
+        # mycursor.execute(sql)
+        #佔位符號填入搜尋
+        sql="SELECT name FROM accounts WHERE account=%s and password=%s"
+        adr=(account,password)
+        mycursor.execute(sql,adr)
         myresult=mycursor.fetchall()
         print(myresult)
         nameNow=str(myresult[0]).replace("(","").replace(")","").replace("'","").replace(",","")
