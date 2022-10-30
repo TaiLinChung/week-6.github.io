@@ -7,22 +7,28 @@ nameBlock.setAttribute("class","mid");
 document.getElementById("getName").appendChild(nameBlock);
 
 
+
 //處理歷史訊息
 // 取得資料
 let historyContent=document.getElementById("getHistory").getAttribute("d");
+console.log(historyContent);
 //整理成陣列
-historyContent2=historyContent.replaceAll("(","").replaceAll(")","").replaceAll("[","").replaceAll("]","").replaceAll("'","")
+let historyContent2=historyContent.replaceAll("(","").replaceAll(")","").replaceAll("[","").replaceAll("]","").replaceAll("'","")
 // console.log(historyContent2);
-historyContent3=historyContent2.split(",");
+let historyContent3=historyContent2.split(",");
+console.log(historyContent3);
 // 取得陣列長度
 console.log(historyContent3.length);
 // console.log(historyContent3[0]+historyContent3[1]);
 
-if (historyContent3.length!=1){
+// let a="";
+// console.log(a.length);
+// console.log(historyContent3[0]+historyContent3[1]);
+if (historyContent3.length!=0){
     let arrayLen=historyContent3.length
-    for(let i =0;i<arrayLen/3;i++){
+    for(let i =0;i<arrayLen/2;i++){
         let historyBlock = document.createElement("div");     //创建一个div元素
-        let result_history=document.createTextNode(historyContent3[1+3*i]+" : "+historyContent3[2+3*i]);
+        let result_history=document.createTextNode(historyContent3[2*i]+" : "+historyContent3[1+2*i]);
         historyBlock.appendChild(result_history);
         historyBlock.setAttribute("class","mid");
         document.getElementById("getHistory").appendChild(historyBlock);    
