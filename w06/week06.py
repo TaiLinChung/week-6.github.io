@@ -15,8 +15,8 @@ app.secret_key="any string but secret"
 import mysql.connector
 mydb=mysql.connector.connect(
     host="localhost",
-    user="",
-    password=""
+    user="root",
+    password="Bb0970662139"
 )
 ##如果還沒創建DATABASE就立刻創建
 mycursor=mydb.cursor()
@@ -25,11 +25,18 @@ mycursor.execute(sql)
 ##立刻使用資料庫signin
 sql="USE signin"
 mycursor.execute(sql)
+# ##如果還沒創建帳號TABLE就立刻創建
+# sql="CREATE TABLE IF NOT EXISTS accounts(name VARCHAR(20),account VARCHAR(20),password VARCHAR(20))"
+# mycursor.execute(sql)
+# ##如果還沒創建留言TABLE就立刻創建
+# sql="CREATE TABLE IF NOT EXISTS messageTable(id INT PRIMARY KEY AUTO_INCREMENT,name VARCHAR(20),message VARCHAR(200))"
+# mycursor.execute(sql)
+####------------更改-------------------
 ##如果還沒創建帳號TABLE就立刻創建
-sql="CREATE TABLE IF NOT EXISTS accounts(name VARCHAR(20),account VARCHAR(20),password VARCHAR(20))"
+sql="CREATE TABLE IF NOT EXISTS accounts(id_people INT PRIMARY KEY AUTO_INCREMENT,name VARCHAR(20),account VARCHAR(20),password VARCHAR(20))"
 mycursor.execute(sql)
 ##如果還沒創建留言TABLE就立刻創建
-sql="CREATE TABLE IF NOT EXISTS messageTable(id INT PRIMARY KEY AUTO_INCREMENT,name VARCHAR(20),message VARCHAR(200))"
+sql="CREATE TABLE IF NOT EXISTS messageTable(id_message INT PRIMARY KEY AUTO_INCREMENT,id_people INT,message VARCHAR(200))"
 mycursor.execute(sql)
 
 
@@ -65,7 +72,14 @@ def signup():
     adr=(account,password,name)
     mycursor.execute(sql,adr)
     myresult=mycursor.fetchall()
-    print("搜尋的結果",myresult)
+    print("全搜尋的結果",myresult)
+    # return render_template("indexW06.html")
+
+    sql2="SELECT *FROM accounts WHERE name=%s"
+    adr2=(name,)
+    mycursor.execute(sql2,adr2)
+    myresult2=mycursor.fetchone()
+    print("姓名搜尋結果",myresult2)
 
     #3.1帳號密碼在資料庫中找不到，註冊成功，導向登入頁面member
     if myresult == [] and (name!="" and account!="" and password!=""):
@@ -75,17 +89,21 @@ def signup():
         val=(name,account,password)
         mycursor.execute(sql,val)
         mydb.commit()
-        print(mycursor.rowcount,"record inserted.")##光標動作執行了幾個row
+        print(mycursor.rowcount,"record 成功註冊.")##光標動作執行了幾個row
         return redirect("http://127.0.0.1:3000/")
 
     elif myresult == [] and (name=="" or account=="" or password==""):
         print("註冊資料不全，導向錯誤頁面")#導回註冊頁面重新註冊
         return redirect("http://127.0.0.1:3000/error?message=資料不全請重新填寫")
     
-    #3.2否則為已註冊過導向錯誤頁面
+    elif myresult2 != []:
+        print("註冊姓名重複，導向錯誤頁面")
+        return redirect("http://127.0.0.1:3000/error?message=暱稱重複已經被註冊過")
+
+    # #3.2否則為已註冊過導向錯誤頁面
     else:
         print("已註冊過，導向錯誤頁面")
-        return redirect("http://127.0.0.1:3000/error?message=暱稱重複或同組帳號"+'、'+"密碼已經被註冊")
+        return redirect("http://127.0.0.1:3000/error?message=同組帳號"+'、'+"密碼已經被註冊")
         
 
 #利用要求字串(Query String)提供彈性:/error?message=自訂文字  
@@ -105,8 +123,8 @@ def signin():
     #接收 POST 方法的 Query String
     account=request.form["account"]
     password=request.form["password"]
-    print("登入者帳號",account)
-    print("登入者密碼",password)
+    # print("登入者帳號",account)
+    # print("登入者密碼",password)
 
     
     #5.連線資料庫判定能否登入
@@ -119,11 +137,14 @@ def signin():
     sql="SELECT *FROM accounts WHERE account=%s and password=%s"
     adr=(account,password)
     mycursor.execute(sql,adr)
-
-    myresult=mycursor.fetchall()
+    myresult=mycursor.fetchone()
+    # myresult=mycursor.fetchall()
+    
     print("以帳號密碼搜尋的結果",myresult)
+#     print("以帳號密碼搜尋的結果",myresult)
     #5.1帳號密碼在資料表中找不到，導向錯誤頁面
-    if myresult == [] or (account=="" and password==""):
+    # if myresult == "[]" or (account=="" and password==""):
+    if myresult == None or (account=="" and password==""):
         print("帳號密碼錯誤，導入錯誤頁面")
         return redirect("http://127.0.0.1:3000/error")
 
@@ -155,7 +176,7 @@ def member():
         nameNow=session["name"]
         
 
-# ##-----大改1-1 目標登入成功後的頁面要秀出歷史訊息
+        ##目標登入成功後的頁面要秀出歷史訊息
         #首先創建一個用來記錄的session
         session["record"]={
             "peopleNow":nameNow,
@@ -164,20 +185,35 @@ def member():
 
         # ##連結資料庫把歷史資料抓出來
         mycursor=mydb.cursor()
-        #取出所有留言的list
-        mycursor.execute("SELECT * FROM messageTable")
-        myresult=mycursor.fetchall()
-        print("登入時的messageTable: ",myresult)
-        ##存入session["record"]的history
-        # print(type(session["record"]["history"]))
-        session["record"]["history"]=myresult
-        # #如果有資料
-        if session["record"]["history"] !=[]:
-            print("當前字典紀錄內容",session["record"]["history"][0][2])
+        #取出所有留言的list*****即將改這裡
+        # sql="SELECT messagetable.id_people,message FROM messagetable INNER JOIN accounts ON messagetable.id_people = accounts.id_people"
+        sql1="SELECT messagetable.id_people,message FROM messagetable INNER JOIN accounts ON messagetable.id_people = accounts.id_people"
+        mycursor.execute(sql1)
+        myresult_id=mycursor.fetchall()
+        # myresult_id=myresult1[0]
+        print("fetchall_1: ",myresult_id)
+        # for e in myresult1:
+        #     print(e)
+        sql2="SELECT name FROM accounts INNER JOIN messagetable ON accounts.id_people = messagetable.id_people"
+        mycursor.execute(sql2)
+        myresult_name=mycursor.fetchall()
+        # print("回傳的長度是",len(myresult_name))
+        print("fetchall_name: ",myresult_name)
+        # for e in myresult_name:
+        #     print(e)
+        ###轉態填值
+        for i in range(len(myresult_name)):
+            
+            print(myresult_name[i],list(myresult_name[i]))
+            myresult_id[i]=list(myresult_id[i])
+            myresult_name[i]=list(myresult_name[i])
+            myresult_id[i][0]=str(myresult_id[i][0])
+            myresult_id[i][0]=myresult_name[i][0]
 
-        ##----大改1-2 改回傳字典形式資料到前端
+        session["record"]["history"]=myresult_id
+        print('session["record"]["history"]當前存放的是',session["record"]["history"])
         return render_template("memberw06.html",record_name=session["record"]["peopleNow"],record_message=session["record"]["history"])
-   
+    
     #沒登錄過就回首頁
     else:
         return redirect("/")
@@ -198,24 +234,47 @@ def message():
     # 如果留言不為空才寫入
     mycursor=mydb.cursor()
     if messagecontent !="":
-        ##將這則留言填入資料庫
-        sql="INSERT INTO messageTable(name,message) VALUES(%s,%s)"
-        val=(name,messagecontent)
-        mycursor.execute(sql,val)
+        sql1="SELECT accounts.id_people FROM accounts WHERE name=%s"
+        adr1=(name,)
+        mycursor.execute(sql1,adr1)
+        myresult1=mycursor.fetchone()
+        print("用姓名搜尋id_people的結果",myresult1[0])
+        ##將id_people連同這則留言填入資料庫
+        sql2="INSERT INTO messageTable(id_people,message) VALUES(%s,%s)"
+        val2=(myresult1[0],messagecontent)
+        mycursor.execute(sql2,val2)
         mydb.commit()
-        print(mycursor.rowcount,"record inserted.")##光標動作執行了幾個row
-        print("寫入內容: 編號*",name,messagecontent)
 
-    ##取出所有留言的list
-    mycursor.execute("SELECT * FROM messageTable")
-    myresult=mycursor.fetchall()
-    print(myresult)
-    session["record"]["history"]=myresult
-    print(session["record"]["history"])
-    # print(1234)
-    if session["record"]["history"] !=[]:
-        print("當前字典紀錄內容",session["record"]["history"][0][2])
+    ##取出所有留言的並轉入session["record"]
+    # ##連結資料庫把歷史資料抓出來
+    mycursor=mydb.cursor()
+    #取出所有留言的list*****即將改這裡
+    # sql="SELECT messagetable.id_people,message FROM messagetable INNER JOIN accounts ON messagetable.id_people = accounts.id_people"
+    sql1="SELECT messagetable.id_people,message FROM messagetable INNER JOIN accounts ON messagetable.id_people = accounts.id_people"
+    mycursor.execute(sql1)
+    myresult_id=mycursor.fetchall()
+    print("fetchall_1: ",myresult_id)
+    sql2="SELECT name FROM accounts INNER JOIN messagetable ON accounts.id_people = messagetable.id_people"
+    mycursor.execute(sql2)
+    myresult_name=mycursor.fetchall()
+    # print("回傳的長度是",len(myresult_name))
+    print("fetchall_name: ",myresult_name)
+
+    ###轉態填值
+    for i in range(len(myresult_name)):
+        
+        print(myresult_name[i],list(myresult_name[i]))
+        myresult_id[i]=list(myresult_id[i])
+        myresult_name[i]=list(myresult_name[i])
+        myresult_id[i][0]=str(myresult_id[i][0])
+        myresult_id[i][0]=myresult_name[i][0]
+
+    session["record"]["history"]=myresult_id
+    print('session["record"]["history"]當前存放的是',session["record"]["history"])
+
     return render_template("memberw06.html",record_name=session["record"]["peopleNow"],record_message=session["record"]["history"])
+
+
 
 
 #啟動網站伺服器，可透過port參數指定埠號
