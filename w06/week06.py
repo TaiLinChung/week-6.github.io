@@ -183,36 +183,48 @@ def member():
             "history":""
         }
 
-        # ##連結資料庫把歷史資料抓出來
+        ##----------更改後的新版本------6666
+        ##連結資料庫把歷史資料抓出來
         mycursor=mydb.cursor()
-        #取出所有留言的list*****即將改這裡
-        # sql="SELECT messagetable.id_people,message FROM messagetable INNER JOIN accounts ON messagetable.id_people = accounts.id_people"
-        sql1="SELECT messagetable.id_people,message FROM messagetable INNER JOIN accounts ON messagetable.id_people = accounts.id_people"
+        sql1="SELECT accounts.name,messagetable.message FROM messagetable INNER JOIN accounts ON messagetable.id_people = accounts.id_people"
         mycursor.execute(sql1)
         myresult_id=mycursor.fetchall()
-        # myresult_id=myresult1[0]
-        print("fetchall_1: ",myresult_id)
-        # for e in myresult1:
-        #     print(e)
-        sql2="SELECT name FROM accounts INNER JOIN messagetable ON accounts.id_people = messagetable.id_people"
-        mycursor.execute(sql2)
-        myresult_name=mycursor.fetchall()
-        # print("回傳的長度是",len(myresult_name))
-        print("fetchall_name: ",myresult_name)
-        # for e in myresult_name:
-        #     print(e)
-        ###轉態填值
-        for i in range(len(myresult_name)):
-            
-            print(myresult_name[i],list(myresult_name[i]))
-            myresult_id[i]=list(myresult_id[i])
-            myresult_name[i]=list(myresult_name[i])
-            myresult_id[i][0]=str(myresult_id[i][0])
-            myresult_id[i][0]=myresult_name[i][0]
-
+        print("抓出來的資料",myresult_id)
         session["record"]["history"]=myresult_id
         print('session["record"]["history"]當前存放的是',session["record"]["history"])
         return render_template("memberw06.html",record_name=session["record"]["peopleNow"],record_message=session["record"]["history"])
+        
+
+        # # ##連結資料庫把歷史資料抓出來原本的更改成上面###蠢到笑
+        # mycursor=mydb.cursor()
+        # #取出所有留言的list*****即將改這裡
+        # # sql="SELECT messagetable.id_people,message FROM messagetable INNER JOIN accounts ON messagetable.id_people = accounts.id_people"
+        # sql1="SELECT messagetable.id_people,message FROM messagetable INNER JOIN accounts ON messagetable.id_people = accounts.id_people"
+        # mycursor.execute(sql1)
+        # myresult_id=mycursor.fetchall()
+        # # myresult_id=myresult1[0]
+        # print("fetchall_1: ",myresult_id)
+        # # for e in myresult1:
+        # #     print(e)
+        # sql2="SELECT name FROM accounts INNER JOIN messagetable ON accounts.id_people = messagetable.id_people"
+        # mycursor.execute(sql2)
+        # myresult_name=mycursor.fetchall()
+        # # print("回傳的長度是",len(myresult_name))
+        # print("fetchall_name: ",myresult_name)
+        # # for e in myresult_name:
+        # #     print(e)
+        # ###轉態填值
+        # for i in range(len(myresult_name)):
+            
+        #     print(myresult_name[i],list(myresult_name[i]))
+        #     myresult_id[i]=list(myresult_id[i])
+        #     myresult_name[i]=list(myresult_name[i])
+        #     myresult_id[i][0]=str(myresult_id[i][0])
+        #     myresult_id[i][0]=myresult_name[i][0]
+
+        # session["record"]["history"]=myresult_id
+        # print('session["record"]["history"]當前存放的是',session["record"]["history"])
+        # return render_template("memberw06.html",record_name=session["record"]["peopleNow"],record_message=session["record"]["history"])
     
     #沒登錄過就回首頁
     else:
